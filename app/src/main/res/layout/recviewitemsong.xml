@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:layout_height="100dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:elevation="3dp"
+        android:background="@drawable/shadow_background"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <TextView
+                    android:text="AJes"
+                    android:layout_width="241dp"
+                    android:layout_height="22dp"
+                    android:id="@+id/textViewArisname"
+                    android:textSize="14sp"
+                    android:gravity="bottom"
+                    android:textColor="#000"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView300"
+                    android:layout_marginStart="8dp"/>
+            <TextView
+                    android:text="Alh sunda ni"
+                    android:layout_width="241dp"
+                    android:layout_height="22dp"
+                    android:textSize="13sp"
+                    android:textColor="#383838"
+                    android:singleLine="true"
+                    android:gravity="center_vertical"
+                    android:id="@+id/textViewsongname"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewArisname"
+                    app:layout_constraintStart_toEndOf="@+id/textView300"
+                    android:layout_marginStart="8dp"/>
+
+                <android.support.v7.widget.CardView
+                        android:layout_width="60dp"
+                        app:cardBackgroundColor="#212121"
+                        app:cardCornerRadius="40dp"
+                        android:scaleType="fitXY"
+                        android:layout_marginTop="8dp"
+                        android:elevation="3dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintVertical_bias="0.511"
+                        android:id="@+id/textView300"
+                        android:layout_height="60dp">
+                    <ImageView
+                            android:layout_width="match_parent"
+                            android:src="@mipmap/defaultpic"
+                            android:layout_height="match_parent"/>
+                </android.support.v7.widget.CardView>
+
+            <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp" app:srcCompat="@drawable/ic_access_time_black_24dp"
+                    android:id="@+id/imageView2"
+                    android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/textViewsongname"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewsongname"/>
+            <TextView
+                    android:text="3:08"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#646464"
+                    android:textSize="12sp"
+                    android:id="@+id/textViewtime"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    android:layout_marginStart="3dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="@+id/imageView2"/>
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
