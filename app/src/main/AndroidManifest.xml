@@ -32,7 +32,7 @@
                 android:exported="true">
         </service>
 
-        <activity android:name=".OnilnesonglisActivity"
+        <activity android:name=".MainActivity"
         android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -9,19 +9,18 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.alhaj.mediaplayer.Adaptors.SongLIstAdaptor
 import com.example.alhaj.mediaplayer.BroadcastReciever.*
 import com.example.alhaj.mediaplayer.fragments.SongListFragment
-import com.example.alhaj.mediaplayer.fragments.SongListFragment.Companion.adaptor
 
 class MyService : Service() {
 
-    var songname:String = ""
+    var songname: String = ""
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
@@ -29,12 +28,12 @@ class MyService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        aj1=this.packageName
-        alhaj1=this
+        aj1 = this.packageName
+        alhaj1 = this
         try {
             songname = intent!!.getStringExtra("songname").toLowerCase()
-        }catch (e:Exception){
-            Log.e("erroe",e.toString())
+        } catch (e: Exception) {
+            Log.e("erroe", e.toString())
         }
         init()
 
@@ -42,33 +41,31 @@ class MyService : Service() {
     }
 
 
-    fun init(){
-        if(songname=="pause"){
+    fun init() {
+        if (songname == "pause") {
             msongplaer.pause()
             refresh()
             return
-        }else if(songname=="play"){
+        } else if (songname == "play") {
             msongplaer.start()
             refresh()
             return
-        }
-        else if(songname=="next"){
+        } else if (songname == "next") {
             next()
             refresh()
             return
-        }else if(songname=="back"){
+        } else if (songname == "back") {
             back()
             refresh()
             return
-        }
-        else if (songname.length>1) {
-            getAllAudioFromDevice(this,1)
+        } else if (songname.length > 1) {
+            getAllAudioFromDevice(this, 1)
             isserviserunning = true
             startForgroundmService()
             return
-        }else{
-            Log.e("my service","get all songs")
-            getAllAudioFromDevice(alhaj1!!,0)
+        } else {
+            Log.e("my service", "get all songs")
+            getAllAudioFromDevice(alhaj1!!, 0)
         }
         isserviserunning = true
         startForgroundmService()
@@ -94,23 +91,32 @@ class MyService : Service() {
         val clickintent4 = Intent(applicationContext, NotificationRecieverClose::class.java)
         val pi4 = PendingIntent.getBroadcast(this, 0, clickintent4, 0)
 
+        val clickintent5 = Intent(applicationContext, MainActivity::class.java)
+        clickintent5.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        clickintent5.putExtra("NotificationMessage", "I am from Notification")
+        clickintent5.addCategory(Intent.CATEGORY_LAUNCHER)
+        clickintent5.action = Intent.ACTION_MAIN
+        val pi5 = PendingIntent.getActivity(this, 0, clickintent5, 0)
+
         collapseview.setOnClickPendingIntent(R.id.plaupausebuttonnot, pi)
         collapseview.setOnClickPendingIntent(R.id.imageButtonbacksongnot, pi1)
         collapseview.setOnClickPendingIntent(R.id.imageButtonnexsongnot, pi2)
         collapseview.setOnClickPendingIntent(R.id.mainlayoutnot, pi3)
         collapseview.setOnClickPendingIntent(R.id.crossnot, pi4)
+        collapseview.setOnClickPendingIntent(R.id.textViewplaingsongnot, pi5)
 
         val notification = NotificationCompat.Builder(this, App().CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_headset_black_24dp)
             .setCustomContentView(collapseview)
+            .setContentIntent(pi5)
             .build()
         startForeground(1, notification)
     }
 
-    fun getAllAudioFromDevice(context: Context,a:Int) {
+    fun getAllAudioFromDevice(context: Context, a: Int) {
 
         val tempAudioList = ArrayList<AudioModel>()
-        if(!isserviserunning){
+        if (!isserviserunning) {
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
                 MediaStore.Audio.AudioColumns.DATA,
@@ -134,7 +140,7 @@ class MyService : Service() {
                     val aj = MediaPlayer()
                     aj.setDataSource(path)
                     aj.prepare()
-                    if(aj.duration>=60000){
+                    if (aj.duration >= 60000) {
                         audioModel.setaName(name)
                         audioModel.setaAlbum(album)
                         audioModel.setaArtist(artist)
@@ -148,9 +154,9 @@ class MyService : Service() {
             }
             if (tempAudioList.size != 0) {
                 msongplaer.reset()
-                MyService.msongplaer.setDataSource(tempAudioList.get(0).aPath)
-                MyService.currentplaingsong = tempAudioList.get(0)
-                MyService.msongplaer.prepare()
+                msongplaer.setDataSource(tempAudioList.get(0).aPath)
+                currentplaingsong = tempAudioList.get(0)
+                msongplaer.prepare()
                 msongplaer.pause()
                 refresh()
 
@@ -164,15 +170,15 @@ class MyService : Service() {
 
         }
 
-        if(a==1){
-            Log.e("error11",songname)
-            for (i in 0..allsonglist!!.size-1){
-                if(allsonglist!![i].aName.toLowerCase().indexOf(songname)!=-1){
+        if (a == 1) {
+            Log.e("error11", songname)
+            for (i in 0..allsonglist!!.size - 1) {
+                if (allsonglist!![i].aName.toLowerCase().indexOf(songname) != -1) {
                     msongplaer.reset()
-                    MyService.msongplaer.setDataSource(allsonglist!!.get(i).aPath)
-                    MyService.currentplaingsong = allsonglist!!.get(i)
-                    playingsong=i
-                    MyService.msongplaer.prepare()
+                    msongplaer.setDataSource(allsonglist!!.get(i).aPath)
+                    currentplaingsong = allsonglist!!.get(i)
+                    playingsong = i
+                    msongplaer.prepare()
                     msongplaer.start()
                     refresh()
                     return
@@ -183,52 +189,62 @@ class MyService : Service() {
     }
 
     fun refreshnotification() {
-            val collapseview = RemoteViews(aj1, R.layout.notification_layout)
+        val collapseview = RemoteViews(aj1, R.layout.notification_layout)
 
-            val clickintent = Intent(alhaj1, NotificationReciever::class.java)
+        val clickintent = Intent(alhaj1, NotificationReciever::class.java)
 
-            val pi = PendingIntent.getBroadcast(alhaj1, 0, clickintent, 0)
+        val pi = PendingIntent.getBroadcast(alhaj1, 0, clickintent, 0)
 
-            val clickintent1 = Intent(alhaj1, NotificationRecieverBack::class.java)
-            val pi1 = PendingIntent.getBroadcast(alhaj1, 0, clickintent1, 0)
+        val clickintent1 = Intent(alhaj1, NotificationRecieverBack::class.java)
+        val pi1 = PendingIntent.getBroadcast(alhaj1, 0, clickintent1, 0)
 
-            val clickintent2 = Intent(alhaj1, NotificationRecieverNext::class.java)
-            val pi2 = PendingIntent.getBroadcast(alhaj1, 0, clickintent2, 0)
+        val clickintent2 = Intent(alhaj1, NotificationRecieverNext::class.java)
+        val pi2 = PendingIntent.getBroadcast(alhaj1, 0, clickintent2, 0)
 
-            val clickintent3 = Intent(alhaj1, NotificationRecieverMain::class.java)
-            val pi3 = PendingIntent.getBroadcast(alhaj1, 0, clickintent3, 0)
+        val clickintent3 = Intent(alhaj1, NotificationRecieverMain::class.java)
+        val pi3 = PendingIntent.getBroadcast(alhaj1, 0, clickintent3, 0)
 
-            val clickintent4 = Intent(alhaj1, NotificationRecieverClose::class.java)
-            val pi4 = PendingIntent.getBroadcast(alhaj1, 0, clickintent4, 0)
+        val clickintent4 = Intent(alhaj1, NotificationRecieverClose::class.java)
+        val pi4 = PendingIntent.getBroadcast(alhaj1, 0, clickintent4, 0)
 
-            collapseview.setOnClickPendingIntent(R.id.plaupausebuttonnot, pi)
-            collapseview.setOnClickPendingIntent(R.id.imageButtonbacksongnot, pi1)
-            collapseview.setOnClickPendingIntent(R.id.imageButtonnexsongnot, pi2)
-            collapseview.setOnClickPendingIntent(R.id.mainlayoutnot, pi3)
-            collapseview.setOnClickPendingIntent(R.id.crossnot, pi4)
 
-            collapseview.setTextViewText(R.id.textViewplaingsongnot, currentplaingsong?.aName)
-            if (msongplaer.isPlaying) {
-                collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.play)
-            } else {
-                collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.pause)
-            }
-            val notification = NotificationCompat.Builder(alhaj1!!, App().CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_headset_black_24dp)
-                .setCustomContentView(collapseview)
-                .build()
-            val Noti = NotificationManagerCompat.from(alhaj1!!)
-            Noti.notify(1, notification)
+        val clickintent5 = Intent(alhaj1, MainActivity::class.java)
+        clickintent5.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        clickintent5.putExtra("NotificationMessage", "I am from Notification")
+        clickintent5.addCategory(Intent.CATEGORY_LAUNCHER)
+        clickintent5.action = Intent.ACTION_MAIN
+        val pi5 = PendingIntent.getActivity(alhaj1, 0, clickintent5, 0)
+
+        collapseview.setOnClickPendingIntent(R.id.plaupausebuttonnot, pi)
+        collapseview.setOnClickPendingIntent(R.id.imageButtonbacksongnot, pi1)
+        collapseview.setOnClickPendingIntent(R.id.imageButtonnexsongnot, pi2)
+        collapseview.setOnClickPendingIntent(R.id.mainlayoutnot, pi3)
+        collapseview.setOnClickPendingIntent(R.id.crossnot, pi4)
+        collapseview.setOnClickPendingIntent(R.id.textViewplaingsongnot, pi5)
+
+        collapseview.setTextViewText(R.id.textViewplaingsongnot, currentplaingsong?.aName)
+        if (msongplaer.isPlaying) {
+            collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.play)
+        } else {
+            collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.pause)
+        }
+        val notification = NotificationCompat.Builder(alhaj1!!, App().CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_headset_black_24dp)
+            .setCustomContentView(collapseview)
+            .setContentIntent(pi5)
+            .build()
+        val Noti = NotificationManagerCompat.from(alhaj1!!)
+        Noti.notify(1, notification)
 
 
     }
 
-
     companion object {
 
-        var aj1="com.example.alhaj.mediaplayer"
+        var aj1 = "com.example.alhaj.mediaplayer"
+
         @SuppressLint("StaticFieldLeak")
-        var alhaj1:Context?=null
+        var alhaj1: Context? = null
         var msongplaer: MediaPlayer = MediaPlayer().apply {
             setAudioStreamType(AudioManager.STREAM_MUSIC)
         }

@@ -1,6 +1,6 @@
 package com.example.alhaj.mediaplayer.Adaptors
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +20,7 @@ class SongLIstAdaptor: RecyclerView.Adapter<SongLIstAdaptor.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
-        val view=LayoutInflater.from(p0.context).inflate(R.layout.recviewitemsong,p0,false)
+        val view=LayoutInflater.from(p0.context).inflate(R.layout.recview_item_song,p0,false)
         return ViewHolder(view)
     }
 

@@ -5,8 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.example.alhaj.mediaplayer.MyService
-import com.example.alhaj.mediaplayer.MyService.Companion.alhaj1
-import com.example.alhaj.mediaplayer.OnilnesonglisActivity
+import com.example.alhaj.mediaplayer.MainActivity
 
 class NotificationReciever :BroadcastReceiver(){
 
@@ -47,7 +46,7 @@ class NotificationRecieverClose :BroadcastReceiver(){
 class NotificationRecieverMain :BroadcastReceiver(){
 
     override fun onReceive(p0: Context?, p1: Intent?) {
-        val intent=Intent(p0,OnilnesonglisActivity::class.java)
+        val intent=Intent(p0,MainActivity::class.java)
         intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK.or( Intent.FLAG_ACTIVITY_NEW_TASK)
         p0!!.startActivity(intent)
     }

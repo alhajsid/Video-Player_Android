@@ -1,38 +1,35 @@
 package com.example.alhaj.mediaplayer.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.SeekBar
-import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.alhaj.mediaplayer.MyService
-import com.example.alhaj.mediaplayer.OnilnesonglisActivity
+import com.example.alhaj.mediaplayer.MainActivity
 import com.example.alhaj.mediaplayer.R
-import kotlinx.android.synthetic.main.activity_onilnesonglis.*
-import kotlinx.android.synthetic.main.layout_songdetail.*
+import com.gauravk.audiovisualizer.visualizer.BlastVisualizer
+import kotlinx.android.synthetic.main.layout_song_detail.*
 
 @SuppressLint("ValidFragment")
-class SongDetailFragment (s:Context) : Fragment() {
-
-
+class SongDetailFragment  : Fragment() {
 
     val mSeekbarUpdateHandler = Handler()
     var mUpdateSeekbar:Runnable?=null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.layout_songdetail,container,false)
+        return inflater.inflate(R.layout.layout_song_detail,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         mUpdateSeekbar = object : Runnable {
             override fun run() {
@@ -69,12 +66,14 @@ class SongDetailFragment (s:Context) : Fragment() {
                 buttonplapause.setBackgroundResource(R.mipmap.pause)
                 MyService.msongplaer.pause()
             }else{
-                seekBarprogress.setMax(MyService.msongplaer.getDuration());
+                seekBarprogress.max = MyService.msongplaer.duration
                 buttonplapause.setBackgroundResource(R.mipmap.play)
                 MyService.msongplaer.start()
             }
 
             MyService.refresh()
+            val audioSessionId: Int = MyService.msongplaer.audioSessionId
+            if (audioSessionId != -1) view.findViewById<BlastVisualizer>(R.id.blast).setAudioSessionId(audioSessionId)
         }
 
         seekBarprogress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -104,7 +103,7 @@ class SongDetailFragment (s:Context) : Fragment() {
                 MyService.msongplaer.start()
                 MyService.currentplaingsong =obj
                 buttonplapause.setBackgroundResource(R.mipmap.play)
-                seekBarprogress.setMax(MyService.msongplaer.getDuration());
+                seekBarprogress.max = MyService.msongplaer.duration
             }
 
             MyService.refresh()
@@ -126,7 +125,7 @@ class SongDetailFragment (s:Context) : Fragment() {
             MyService.refresh()
         }
         buttonbackdeatil.setOnClickListener {
-            OnilnesonglisActivity.mPager.setCurrentItem(0, true)
+            MainActivity.mPager.setCurrentItem(0, true)
         }
     }
 
@@ -138,13 +137,13 @@ class SongDetailFragment (s:Context) : Fragment() {
         }
 
     }
+
     fun changesStatusBarColor(){
         val sindows=activity!!.window
         sindows.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         sindows.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        sindows.statusBarColor=ContextCompat.getColor(activity!!,R.color.colorAccent)
+        sindows.statusBarColor= ContextCompat.getColor(activity!!,R.color.colorAccent)
     }
-
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
@@ -164,9 +163,9 @@ class SongDetailFragment (s:Context) : Fragment() {
             }
             var o=""
             if(seconds1<10){
-                o=i.toString()+":0"+seconds1.toString()
+                o= "$i:0$seconds1"
             }else{
-                o=i.toString()+":"+seconds1.toString()
+                o= "$i:$seconds1"
 
             }
             return o
@@ -184,9 +183,9 @@ class SongDetailFragment (s:Context) : Fragment() {
             }
             var o=""
             o = if(seconds1<10){
-                i.toString()+":0"+seconds1.toString()
+                "$i:0$seconds1"
             }else{
-                i.toString()+":"+seconds1.toString()
+                "$i:$seconds1"
 
             }
             return o

@@ -2,36 +2,23 @@ package com.example.alhaj.mediaplayer
 
 
 import android.Manifest
-import android.content.Context
-import android.graphics.Bitmap
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.view.ViewGroup
-import android.view.LayoutInflater
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.TextView
-import com.example.alhaj.mediaplayer.OnilnesonglisActivity.Companion.aj
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.example.alhaj.mediaplayer.fragments.SongDetailFragment
 import com.example.alhaj.mediaplayer.fragments.SongListFragment
-import com.example.alhaj.mediaplayer.viewpager.VerticalViewPager
-import com.xwray.groupie.Item
-import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.layout_songdetail.view.*
-import kotlinx.android.synthetic.main.recviewitemsong.view.*
-import android.Manifest.permission
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import android.support.v4.app.*
-import android.util.Log
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_onilnesonglis.*
+import kotlinx.android.synthetic.main.activity_main.*
 
-
-class OnilnesonglisActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
 
     val alhaj=this
@@ -39,9 +26,12 @@ class OnilnesonglisActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onilnesonglis)
+        setContentView(R.layout.activity_main)
 
-        mAdapter = MyAdapter(supportFragmentManager,alhaj)
+        mAdapter = MyAdapter(this)
+        mAdapter.addFragment(SongListFragment())
+        mAdapter.addFragment(SongDetailFragment())
+
         mPager = findViewById(R.id.viewpager)
         isReadStoragePermissionGranted()
         buttonpermisiion.setOnClickListener{
@@ -49,7 +39,13 @@ class OnilnesonglisActivity : AppCompatActivity() {
         }
     }
 
+    fun unTouchableViewPager(){
+        viewpager.isUserInputEnabled = false
+    }
 
+    fun touchableViewPager(){
+        viewpager.isUserInputEnabled = true
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -79,28 +75,42 @@ class OnilnesonglisActivity : AppCompatActivity() {
         }
     }
 
-    class MyAdapter(fm: FragmentManager,val alhaj:Context) : FragmentPagerAdapter(fm) {
+    class MyAdapter(fm: FragmentActivity) : FragmentStateAdapter(fm) {
 
-        override fun getCount(): Int {
-            return 2
+        private val arrayList: ArrayList<Fragment> = ArrayList()
+
+        override fun getItemCount(): Int {
+            return arrayList.size
         }
 
-        override fun getItem(position: Int): Fragment? {
-
-            when (position) {
-                0 -> return SongListFragment(alhaj)
-                1 ->
-                    // return a different Fragment class here
-                    // if you want want a completely different layout
-                    return SongDetailFragment(alhaj)
-                else -> return null
-            }
+        override fun createFragment(position: Int): Fragment {
+            return arrayList[position]
         }
+
+
+        fun addFragment(fragment: Fragment?) {
+            arrayList.add(fragment!!)
+        }
+//        override fun getCount(): Int {
+//            return 2
+//        }
+//
+//        override fun getItem(position: Int): Fragment {
+//
+//            when (position) {
+//                0 -> return SongListFragment(alhaj)
+//                1 ->
+//                    // return a different Fragment class here
+//                    // if you want want a completely different layout
+//                    return SongDetailFragment(alhaj)
+//                else -> return SongDetailFragment(alhaj)
+//            }
+//        }
     }
 
 
     companion object {
-        lateinit var mPager: VerticalViewPager
+        lateinit var mPager: ViewPager2
         val aj=MediaPlayer()
         var CURRENT_PAGE = 1
 

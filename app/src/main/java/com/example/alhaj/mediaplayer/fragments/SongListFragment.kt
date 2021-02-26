@@ -2,39 +2,34 @@ package com.example.alhaj.mediaplayer.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.*
-import com.example.alhaj.mediaplayer.*
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.alhaj.mediaplayer.Adaptors.SongLIstAdaptor
-import com.example.alhaj.mediaplayer.BroadcastReciever.NotificationReciever
-import com.example.alhaj.mediaplayer.MyService.Companion.msongplaer
+import com.example.alhaj.mediaplayer.MainActivity
+import com.example.alhaj.mediaplayer.MyReceiver
+import com.example.alhaj.mediaplayer.MyService
 import com.example.alhaj.mediaplayer.MyService.Companion.refresh
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.activity_onilnesonglis.*
-import kotlinx.android.synthetic.main.layout_songlist.*
+import com.example.alhaj.mediaplayer.R
+import com.gauravk.audiovisualizer.visualizer.BlastVisualizer
+import kotlinx.android.synthetic.main.layout_song_detail.*
+import kotlinx.android.synthetic.main.layout_song_list.*
 
 @SuppressLint("ValidFragment")
-class SongListFragment(var mContext: Context) : Fragment() {
+class SongListFragment : Fragment() {
 
 
     companion object{
@@ -51,7 +46,7 @@ class SongListFragment(var mContext: Context) : Fragment() {
     var mUpdateSeekbar: Runnable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view= inflater.inflate(R.layout.layout_songlist, container, false)
+        val view= inflater.inflate(R.layout.layout_song_list, container, false)
         playingSong=view.findViewById(R.id.textViewplaingsong)
         playPauseBtn=view.findViewById(R.id.imageButtonplasong)
         progressBar1=view.findViewById(R.id.seekbar2)
@@ -63,18 +58,17 @@ class SongListFragment(var mContext: Context) : Fragment() {
 
         adaptor= SongLIstAdaptor()
         recyclerveiwlistsongs.adapter = adaptor
-
         if (ContextCompat.checkSelfPermission(
-                mContext,
+                context!!,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             if (!MyService.isserviserunning) {
-                //getAllAudioFromDevice(mContext)
+                //getAllAudioFromDevice(context!!)
                 Log.e("service started"," SongListFragment")
-                mContext.startService(Intent(mContext, MyService::class.java))
+                context!!.startService(Intent(context!!, MyService::class.java))
                 val filter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
-                mContext.registerReceiver(MyReceiver(), filter)
+                context!!.registerReceiver(MyReceiver(), filter)
             } else {
                 /////maybe error #################################################################
                 if (MyService.allsonglist?.size != 0) {
@@ -103,7 +97,7 @@ class SongListFragment(var mContext: Context) : Fragment() {
             seekbar2.setMax(MyService.msongplaer.getDuration());
 
             smallsongpla.setOnClickListener {
-                OnilnesonglisActivity.mPager.setCurrentItem(1,true)
+                MainActivity.mPager.setCurrentItem(1,true)
             }
 
             MyService.msongplaer.setOnCompletionListener {
@@ -204,7 +198,7 @@ class SongListFragment(var mContext: Context) : Fragment() {
                 imageButtonplasong.setBackgroundResource(R.mipmap.play)
                 seekbar2.max = MyService.msongplaer.duration
             } catch (e: Exception) {
-                Toast.makeText(mContext, e.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context!!, e.toString(), Toast.LENGTH_SHORT).show()
             }
         }
     }
