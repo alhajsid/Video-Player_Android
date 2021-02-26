@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.media.AudioManager
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.MediaStore
@@ -17,6 +17,9 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.alhaj.mediaplayer.Adaptors.SongLIstAdaptor
 import com.example.alhaj.mediaplayer.BroadcastReciever.*
 import com.example.alhaj.mediaplayer.fragments.SongListFragment
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class MyService : Service() {
 
@@ -28,10 +31,10 @@ class MyService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        aj1 = this.packageName
-        alhaj1 = this
+        pakageName = this.packageName
+        context = this
         try {
-            songname = intent!!.getStringExtra("songname").toLowerCase()
+            songname = intent!!.getStringExtra("songname").toLowerCase(Locale.getDefault())
         } catch (e: Exception) {
             Log.e("erroe", e.toString())
         }
@@ -41,13 +44,13 @@ class MyService : Service() {
     }
 
 
-    fun init() {
+    private fun init() {
         if (songname == "pause") {
-            msongplaer.pause()
+            mediaPlayer.pause()
             refresh()
             return
         } else if (songname == "play") {
-            msongplaer.start()
+            mediaPlayer.start()
             refresh()
             return
         } else if (songname == "next") {
@@ -60,14 +63,14 @@ class MyService : Service() {
             return
         } else if (songname.length > 1) {
             getAllAudioFromDevice(this, 1)
-            isserviserunning = true
+            isServiceRunning = true
             startForgroundmService()
             return
         } else {
             Log.e("my service", "get all songs")
-            getAllAudioFromDevice(alhaj1!!, 0)
+            getAllAudioFromDevice(context!!, 0)
         }
-        isserviserunning = true
+        isServiceRunning = true
         startForgroundmService()
 
     }
@@ -116,7 +119,7 @@ class MyService : Service() {
     fun getAllAudioFromDevice(context: Context, a: Int) {
 
         val tempAudioList = ArrayList<AudioModel>()
-        if (!isserviserunning) {
+        if (!isServiceRunning) {
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
                 MediaStore.Audio.AudioColumns.DATA,
@@ -153,33 +156,33 @@ class MyService : Service() {
                 c.close()
             }
             if (tempAudioList.size != 0) {
-                msongplaer.reset()
-                msongplaer.setDataSource(tempAudioList.get(0).aPath)
-                currentplaingsong = tempAudioList.get(0)
-                msongplaer.prepare()
-                msongplaer.pause()
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(tempAudioList.get(0).aPath)
+                currentPlayingSong = tempAudioList.get(0)
+                mediaPlayer.prepare()
+                mediaPlayer.pause()
                 refresh()
 
                 SongLIstAdaptor().setList(tempAudioList)
                 SongListFragment.adaptor.notifyDataSetChanged()
             }
-            if (allsonglist != null) {
-                allsonglist!!.clear()
+            if (songList != null) {
+                songList!!.clear()
             }
-            allsonglist = tempAudioList
+            songList = tempAudioList
 
         }
 
         if (a == 1) {
             Log.e("error11", songname)
-            for (i in 0..allsonglist!!.size - 1) {
-                if (allsonglist!![i].aName.toLowerCase().indexOf(songname) != -1) {
-                    msongplaer.reset()
-                    msongplaer.setDataSource(allsonglist!!.get(i).aPath)
-                    currentplaingsong = allsonglist!!.get(i)
+            for (i in 0 until songList!!.size) {
+                if (songList!![i].aName.toLowerCase(Locale.ROOT).indexOf(songname) != -1) {
+                    mediaPlayer.reset()
+                    mediaPlayer.setDataSource(songList!!.get(i).aPath)
+                    currentPlayingSong = songList!!.get(i)
                     playingsong = i
-                    msongplaer.prepare()
-                    msongplaer.start()
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
                     refresh()
                     return
                 }
@@ -189,31 +192,31 @@ class MyService : Service() {
     }
 
     fun refreshnotification() {
-        val collapseview = RemoteViews(aj1, R.layout.notification_layout)
+        val collapseview = RemoteViews(pakageName, R.layout.notification_layout)
 
-        val clickintent = Intent(alhaj1, NotificationReciever::class.java)
+        val clickintent = Intent(context, NotificationReciever::class.java)
 
-        val pi = PendingIntent.getBroadcast(alhaj1, 0, clickintent, 0)
+        val pi = PendingIntent.getBroadcast(context, 0, clickintent, 0)
 
-        val clickintent1 = Intent(alhaj1, NotificationRecieverBack::class.java)
-        val pi1 = PendingIntent.getBroadcast(alhaj1, 0, clickintent1, 0)
+        val clickintent1 = Intent(context, NotificationRecieverBack::class.java)
+        val pi1 = PendingIntent.getBroadcast(context, 0, clickintent1, 0)
 
-        val clickintent2 = Intent(alhaj1, NotificationRecieverNext::class.java)
-        val pi2 = PendingIntent.getBroadcast(alhaj1, 0, clickintent2, 0)
+        val clickintent2 = Intent(context, NotificationRecieverNext::class.java)
+        val pi2 = PendingIntent.getBroadcast(context, 0, clickintent2, 0)
 
-        val clickintent3 = Intent(alhaj1, NotificationRecieverMain::class.java)
-        val pi3 = PendingIntent.getBroadcast(alhaj1, 0, clickintent3, 0)
+        val clickintent3 = Intent(context, NotificationRecieverMain::class.java)
+        val pi3 = PendingIntent.getBroadcast(context, 0, clickintent3, 0)
 
-        val clickintent4 = Intent(alhaj1, NotificationRecieverClose::class.java)
-        val pi4 = PendingIntent.getBroadcast(alhaj1, 0, clickintent4, 0)
+        val clickintent4 = Intent(context, NotificationRecieverClose::class.java)
+        val pi4 = PendingIntent.getBroadcast(context, 0, clickintent4, 0)
 
 
-        val clickintent5 = Intent(alhaj1, MainActivity::class.java)
+        val clickintent5 = Intent(context, MainActivity::class.java)
         clickintent5.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
         clickintent5.putExtra("NotificationMessage", "I am from Notification")
         clickintent5.addCategory(Intent.CATEGORY_LAUNCHER)
         clickintent5.action = Intent.ACTION_MAIN
-        val pi5 = PendingIntent.getActivity(alhaj1, 0, clickintent5, 0)
+        val pi5 = PendingIntent.getActivity(context, 0, clickintent5, 0)
 
         collapseview.setOnClickPendingIntent(R.id.plaupausebuttonnot, pi)
         collapseview.setOnClickPendingIntent(R.id.imageButtonbacksongnot, pi1)
@@ -222,42 +225,45 @@ class MyService : Service() {
         collapseview.setOnClickPendingIntent(R.id.crossnot, pi4)
         collapseview.setOnClickPendingIntent(R.id.textViewplaingsongnot, pi5)
 
-        collapseview.setTextViewText(R.id.textViewplaingsongnot, currentplaingsong?.aName)
-        if (msongplaer.isPlaying) {
+        collapseview.setTextViewText(R.id.textViewplaingsongnot, currentPlayingSong?.aName)
+        if (mediaPlayer.isPlaying) {
             collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.play)
         } else {
             collapseview.setImageViewResource(R.id.mplaypause, R.mipmap.pause)
         }
-        val notification = NotificationCompat.Builder(alhaj1!!, App().CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context!!, App().CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_headset_black_24dp)
             .setCustomContentView(collapseview)
             .setContentIntent(pi5)
             .build()
-        val Noti = NotificationManagerCompat.from(alhaj1!!)
-        Noti.notify(1, notification)
+        val notificationManagerCompat = NotificationManagerCompat.from(context!!)
+        notificationManagerCompat.notify(1, notification)
 
 
     }
 
     companion object {
 
-        var aj1 = "com.example.alhaj.mediaplayer"
+        var pakageName = "com.example.alhaj.mediaplayer"
 
         @SuppressLint("StaticFieldLeak")
-        var alhaj1: Context? = null
-        var msongplaer: MediaPlayer = MediaPlayer().apply {
-            setAudioStreamType(AudioManager.STREAM_MUSIC)
+        var context: Context? = null
+        var mediaPlayer: MediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build())
         }
         var playingsong = 0
-        var isserviserunning = false
-        var allsonglist: ArrayList<AudioModel>? = null
-        var currentplaingsong: AudioModel? = null
+        var isServiceRunning = false
+        var songList: ArrayList<AudioModel>? = null
+        var currentPlayingSong: AudioModel? = null
 
         fun play() {
-            if (msongplaer.isPlaying) {
-                msongplaer.pause()
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
             } else {
-                msongplaer.start()
+                mediaPlayer.start()
             }
             refresh()
         }
@@ -269,27 +275,27 @@ class MyService : Service() {
         fun back() {
             if (playingsong > 0) {
                 playingsong = playingsong - 1
-                MyService.msongplaer.reset()
-                val obj = allsonglist!![playingsong]
-                msongplaer.setDataSource(obj.aPath)
-                msongplaer.prepare()
-                msongplaer.start()
-                currentplaingsong = obj
+                mediaPlayer.reset()
+                val obj = songList!![playingsong]
+                mediaPlayer.setDataSource(obj.aPath)
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+                currentPlayingSong = obj
             }
             refresh()
         }
 
         fun next() {
             try {
-                if (playingsong < allsonglist!!.size - 1) {
+                if (playingsong < songList!!.size - 1) {
                     playingsong = playingsong + 1
-                    MyService.msongplaer.reset()
-                    val obj = allsonglist!![playingsong]
-                    msongplaer.setDataSource(obj.aPath)
-                    msongplaer.prepare()
-                    msongplaer.start()
-                    currentplaingsong = obj
-                    Toast.makeText(alhaj1, "yeh i run", Toast.LENGTH_SHORT).show()
+                    mediaPlayer.reset()
+                    val obj = songList!![playingsong]
+                    mediaPlayer.setDataSource(obj.aPath)
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
+                    currentPlayingSong = obj
+                    Toast.makeText(context, "yeh i run", Toast.LENGTH_SHORT).show()
                     refresh()
                 }
             } catch (e: Exception) {
@@ -298,7 +304,7 @@ class MyService : Service() {
 
     }
 
-    val MediaPlayer.seconds: String
+    private val MediaPlayer.seconds: String
         get() {
             var seconds1 = this.duration / 1000
             var i = 0
@@ -306,12 +312,10 @@ class MyService : Service() {
                 i += 1
                 seconds1 -= 60
             }
-            var o = ""
-            if (seconds1 < 10) {
-                o = i.toString() + ":0" + seconds1.toString()
+            return if (seconds1 < 10) {
+                "$i:0$seconds1"
             } else {
-                o = i.toString() + ":" + seconds1.toString()
+                "$i:$seconds1"
             }
-            return o
         }
 }

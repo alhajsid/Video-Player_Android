@@ -11,7 +11,7 @@ class NotificationReciever :BroadcastReceiver(){
 
     override fun onReceive(p0: Context?, p1: Intent?) {
         MyService.play()
-        Toast.makeText(p0,"broadcast",Toast.LENGTH_SHORT).show()
+//        Toast.makeText(p0,"broadcast",Toast.LENGTH_SHORT).show()
 
     }
 
@@ -38,7 +38,7 @@ class NotificationRecieverClose :BroadcastReceiver(){
     override fun onReceive(p0: Context?, p1: Intent?) {
         val int=Intent(p0,MyService::class.java)
         p0!!.stopService(int)
-        MyService.msongplaer.stop()
+        MyService.mediaPlayer.stop()
     }
 
 }

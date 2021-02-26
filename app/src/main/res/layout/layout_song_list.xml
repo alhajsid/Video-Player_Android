@@ -24,7 +24,7 @@
                     android:layout_width="200dp"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
-                    android:paddingStart="10dp"
+                    android:paddingStart="24dp"
                     android:text="MUSIC"
                     android:textColor="#000"
                     android:textSize="28sp"
@@ -38,8 +38,7 @@
                 <TextView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="24dp"
                         android:layout_marginBottom="7dp"
                         android:background="@mipmap/menu"
                         android:gravity="end" />
@@ -141,19 +140,28 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.518" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/textViewplaingsong"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/playingsongback"
                 android:gravity="center"
-                android:padding="5dp"
-                android:text=""
+                android:background="@drawable/playingsongback"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:marqueeRepeatLimit ="marquee_forever"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"
                 android:textColor="@color/colorAccent"
+                tools:text="@tools:sample/lorem/random"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageButtonbacksong"
@@ -161,5 +169,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.47" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>

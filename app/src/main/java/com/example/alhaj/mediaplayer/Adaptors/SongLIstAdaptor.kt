@@ -51,13 +51,13 @@ class SongLIstAdaptor: RecyclerView.Adapter<SongLIstAdaptor.ViewHolder>() {
             songDuration.text=duration
 
             itemView.setOnClickListener {
-                MyService.msongplaer.reset()
-                val obj = MyService.allsonglist!![position]
+                MyService.mediaPlayer.reset()
+                val obj = MyService.songList!![position]
                 SongListFragment.playingSong.text = obj.aName
-                MyService.msongplaer.setDataSource(obj.aPath)
-                MyService.msongplaer.prepare()
-                MyService.msongplaer.start()
-                MyService.currentplaingsong = obj
+                MyService.mediaPlayer.setDataSource(obj.aPath)
+                MyService.mediaPlayer.prepare()
+                MyService.mediaPlayer.start()
+                MyService.currentPlayingSong = obj
                 MyService.playingsong = position
                 SongListFragment.playPauseBtn.setBackgroundResource(R.mipmap.play)
                 MyService.refresh()

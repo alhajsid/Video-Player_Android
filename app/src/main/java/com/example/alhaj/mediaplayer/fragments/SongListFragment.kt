@@ -24,8 +24,6 @@ import com.example.alhaj.mediaplayer.MyReceiver
 import com.example.alhaj.mediaplayer.MyService
 import com.example.alhaj.mediaplayer.MyService.Companion.refresh
 import com.example.alhaj.mediaplayer.R
-import com.gauravk.audiovisualizer.visualizer.BlastVisualizer
-import kotlinx.android.synthetic.main.layout_song_detail.*
 import kotlinx.android.synthetic.main.layout_song_list.*
 
 @SuppressLint("ValidFragment")
@@ -56,6 +54,7 @@ class SongListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textViewplaingsong.isSelected=true
         adaptor= SongLIstAdaptor()
         recyclerveiwlistsongs.adapter = adaptor
         if (ContextCompat.checkSelfPermission(
@@ -63,7 +62,7 @@ class SongListFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            if (!MyService.isserviserunning) {
+            if (!MyService.isServiceRunning) {
                 //getAllAudioFromDevice(context!!)
                 Log.e("service started"," SongListFragment")
                 context!!.startService(Intent(context!!, MyService::class.java))
@@ -71,19 +70,19 @@ class SongListFragment : Fragment() {
                 context!!.registerReceiver(MyReceiver(), filter)
             } else {
                 /////maybe error #################################################################
-                if (MyService.allsonglist?.size != 0) {
-                    adaptor.setList(MyService.allsonglist!!)
+                if (MyService.songList?.size != 0) {
+                    adaptor.setList(MyService.songList!!)
                 }
                 adaptor.notifyDataSetChanged()
-                textViewplaingsong.text = MyService.currentplaingsong?.aName
+                textViewplaingsong.text = MyService.currentPlayingSong?.aName
             }
 
             mUpdateSeekbar = object : Runnable {
                 override fun run() {
-                    seekbar2.progress = MyService.msongplaer.currentPosition
-                    playingSong.text = MyService.currentplaingsong?.aName
-                    seekbar2.max = MyService.msongplaer.duration
-                    if (MyService.msongplaer.isPlaying) {
+                    seekbar2.progress = MyService.mediaPlayer.currentPosition
+                    playingSong.text = MyService.currentPlayingSong?.aName
+                    seekbar2.max = MyService.mediaPlayer.duration
+                    if (MyService.mediaPlayer.isPlaying) {
                         imageButtonplasong.setBackgroundResource(R.mipmap.play)
                     } else {
                         imageButtonplasong.setBackgroundResource(R.mipmap.pause)
@@ -94,35 +93,31 @@ class SongListFragment : Fragment() {
                 }
             }
             mSeekbarUpdateHandler.postDelayed(mUpdateSeekbar, 100);
-            seekbar2.setMax(MyService.msongplaer.getDuration());
+            seekbar2.setMax(MyService.mediaPlayer.getDuration());
 
             smallsongpla.setOnClickListener {
                 MainActivity.mPager.setCurrentItem(1,true)
             }
 
-            MyService.msongplaer.setOnCompletionListener {
+            MyService.mediaPlayer.setOnCompletionListener {
                 try {
-                    if (MyService.playingsong < MyService.allsonglist!!.size - 1) {
+                    if (MyService.playingsong < MyService.songList!!.size - 1) {
                         MyService.playingsong = MyService.playingsong + 1
-                        val obj = MyService.allsonglist!![MyService.playingsong]
-                        MyService.msongplaer.reset()
-                        MyService.msongplaer.setDataSource(obj.aPath)
-                        MyService.msongplaer.prepare()
-                       // MyService.msongplaer.start()
-                        MyService.currentplaingsong = obj
-
-                        Toast.makeText(context,"a",Toast.LENGTH_SHORT).show()
+                        val obj = MyService.songList!![MyService.playingsong]
+                        MyService.mediaPlayer.reset()
+                        MyService.mediaPlayer.setDataSource(obj.aPath)
+                        MyService.mediaPlayer.prepare()
+                        MyService.mediaPlayer.start()
+                        MyService.currentPlayingSong = obj
                     }
                     else{
                         MyService.playingsong =0
-                        val obj = MyService.allsonglist!![MyService.playingsong]
-                        MyService.msongplaer.reset()
-                        MyService.msongplaer.setDataSource(obj.aPath)
-                        MyService.msongplaer.prepare()
-                        MyService.msongplaer.start()
-                        MyService.currentplaingsong = obj
-
-                        Toast.makeText(context,"b",Toast.LENGTH_SHORT).show()
+                        val obj = MyService.songList!![MyService.playingsong]
+                        MyService.mediaPlayer.reset()
+                        MyService.mediaPlayer.setDataSource(obj.aPath)
+                        MyService.mediaPlayer.prepare()
+                        MyService.mediaPlayer.start()
+                        MyService.currentPlayingSong = obj
                     }
                     refresh()
                 } catch (e: Exception) {
@@ -132,19 +127,19 @@ class SongListFragment : Fragment() {
             }
 
 
-            if (MyService.msongplaer.isPlaying) {
+            if (MyService.mediaPlayer.isPlaying) {
                 imageButtonplasong.setBackgroundResource(R.mipmap.play)
             } else {
                 imageButtonplasong.setBackgroundResource(R.mipmap.pause)
             }
 
             playpauseback.setOnClickListener {
-                if (MyService.msongplaer.isPlaying) {
+                if (MyService.mediaPlayer.isPlaying) {
                     imageButtonplasong.setBackgroundResource(R.mipmap.pause)
-                    MyService.msongplaer.pause()
+                    MyService.mediaPlayer.pause()
                 } else {
                     imageButtonplasong.setBackgroundResource(R.mipmap.play)
-                    MyService.msongplaer.start()
+                    MyService.mediaPlayer.start()
                 }
                 refresh()
             }
@@ -185,18 +180,18 @@ class SongListFragment : Fragment() {
     }
 
     fun nextSong(){
-        if (MyService.playingsong < MyService.allsonglist!!.size - 1) {
+        if (MyService.playingsong < MyService.songList!!.size - 1) {
             try {
                 MyService.playingsong = MyService.playingsong + 1
-                MyService.msongplaer.reset()
-                val obj = MyService.allsonglist!![MyService.playingsong]
+                MyService.mediaPlayer.reset()
+                val obj = MyService.songList!![MyService.playingsong]
                 textViewplaingsong.text = obj.aName
-                MyService.msongplaer.setDataSource(obj.aPath)
-                MyService.msongplaer.prepare()
-                MyService.msongplaer.start()
-                MyService.currentplaingsong = obj
+                MyService.mediaPlayer.setDataSource(obj.aPath)
+                MyService.mediaPlayer.prepare()
+                MyService.mediaPlayer.start()
+                MyService.currentPlayingSong = obj
                 imageButtonplasong.setBackgroundResource(R.mipmap.play)
-                seekbar2.max = MyService.msongplaer.duration
+                seekbar2.max = MyService.mediaPlayer.duration
             } catch (e: Exception) {
                 Toast.makeText(context!!, e.toString(), Toast.LENGTH_SHORT).show()
             }
@@ -207,14 +202,14 @@ class SongListFragment : Fragment() {
     fun backwardSong(){
         if (MyService.playingsong > 0) {
             MyService.playingsong = MyService.playingsong - 1
-            MyService.msongplaer.reset()
-            val obj = MyService.allsonglist!![MyService.playingsong]
+            MyService.mediaPlayer.reset()
+            val obj = MyService.songList!![MyService.playingsong]
             textViewplaingsong.text = obj.aName
-            MyService.msongplaer.setDataSource(obj.aPath)
-            MyService.msongplaer.prepare()
-            MyService.msongplaer.start()
-            seekbar2.setMax(MyService.msongplaer.getDuration());
-            MyService.currentplaingsong = obj
+            MyService.mediaPlayer.setDataSource(obj.aPath)
+            MyService.mediaPlayer.prepare()
+            MyService.mediaPlayer.start()
+            seekbar2.setMax(MyService.mediaPlayer.getDuration());
+            MyService.currentPlayingSong = obj
             imageButtonplasong.setBackgroundResource(R.mipmap.play)
         }
     }
@@ -230,13 +225,13 @@ class SongListFragment : Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
         if (isVisibleToUser) {
             try {
-                if (MyService.msongplaer.isPlaying) {
+                if (MyService.mediaPlayer.isPlaying) {
                     imageButtonplasong.setBackgroundResource(R.mipmap.play)
                 } else {
                     imageButtonplasong.setBackgroundResource(R.mipmap.pause)
                 }
 
-                seekbar2.max = MyService.msongplaer.duration;
+                seekbar2.max = MyService.mediaPlayer.duration;
 
                 changesStatusBarColor()
             } catch (e: Exception) {

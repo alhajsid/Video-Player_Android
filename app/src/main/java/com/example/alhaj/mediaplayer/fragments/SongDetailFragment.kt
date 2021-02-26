@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import com.example.alhaj.mediaplayer.MyService
 import com.example.alhaj.mediaplayer.MainActivity
 import com.example.alhaj.mediaplayer.R
-import com.gauravk.audiovisualizer.visualizer.BlastVisualizer
 import kotlinx.android.synthetic.main.layout_song_detail.*
 
 @SuppressLint("ValidFragment")
@@ -27,15 +26,17 @@ class SongDetailFragment  : Fragment() {
         return inflater.inflate(R.layout.layout_song_detail,container,false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textViewsongnamefullscreen.isSelected=true
 
         mUpdateSeekbar = object : Runnable {
             override fun run() {
-                seekBarprogress.progress = MyService.msongplaer.currentPosition
-                textViewcurrensongime.text = MyService.msongplaer.currentSeconds
-                textViewmaxsongime.text = MyService.msongplaer.seconds
+                seekBarprogress.progress = MyService.mediaPlayer.currentPosition
+                textViewcurrensongime.text = MyService.mediaPlayer.currentSeconds
+                textViewmaxsongime.text = MyService.mediaPlayer.seconds
                 /*
                 seekBarprogress.max = MyService.msongplaer.duration;
                 textViewsongnamefullscreen.text= MyService.currentplaingsong?.aName
@@ -51,36 +52,34 @@ class SongDetailFragment  : Fragment() {
 
         mSeekbarUpdateHandler.postDelayed(mUpdateSeekbar, 200);
 
-        textViewsongnamefullscreen.text= MyService.currentplaingsong?.aName
+        textViewsongnamefullscreen.text= MyService.currentPlayingSong?.aName
 
-        seekBarprogress.max = MyService.msongplaer.duration;
+        seekBarprogress.max = MyService.mediaPlayer.duration;
 
-        if (MyService.msongplaer.isPlaying){
+        if (MyService.mediaPlayer.isPlaying){
             buttonplapause.setBackgroundResource(R.mipmap.play)
         }else{
             buttonplapause.setBackgroundResource(R.mipmap.pause)
         }
 
         buttonpaypau.setOnClickListener {
-            if (MyService.msongplaer.isPlaying){
+            if (MyService.mediaPlayer.isPlaying){
                 buttonplapause.setBackgroundResource(R.mipmap.pause)
-                MyService.msongplaer.pause()
+                MyService.mediaPlayer.pause()
             }else{
-                seekBarprogress.max = MyService.msongplaer.duration
+                seekBarprogress.max = MyService.mediaPlayer.duration
                 buttonplapause.setBackgroundResource(R.mipmap.play)
-                MyService.msongplaer.start()
+                MyService.mediaPlayer.start()
             }
 
             MyService.refresh()
-            val audioSessionId: Int = MyService.msongplaer.audioSessionId
-            if (audioSessionId != -1) view.findViewById<BlastVisualizer>(R.id.blast).setAudioSessionId(audioSessionId)
         }
 
         seekBarprogress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 // Display the current progress of SeekBar
                 if(b)
-                    MyService.msongplaer.seekTo(i)
+                    MyService.mediaPlayer.seekTo(i)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -93,34 +92,34 @@ class SongDetailFragment  : Fragment() {
         })
 
         buttonnexskip.setOnClickListener {
-            if (MyService.playingsong < MyService.allsonglist!!.size-1){
+            if (MyService.playingsong < MyService.songList!!.size-1){
                 MyService.playingsong = MyService.playingsong +1
 
-                MyService.msongplaer.reset()
-                val obj= MyService.allsonglist!![MyService.playingsong]
-                MyService.msongplaer.setDataSource(obj.aPath)
-                MyService.msongplaer.prepare()
-                MyService.msongplaer.start()
-                MyService.currentplaingsong =obj
+                MyService.mediaPlayer.reset()
+                val obj= MyService.songList!![MyService.playingsong]
+                MyService.mediaPlayer.setDataSource(obj.aPath)
+                MyService.mediaPlayer.prepare()
+                MyService.mediaPlayer.start()
+                MyService.currentPlayingSong =obj
+                textViewsongnamefullscreen.text=obj.aName
                 buttonplapause.setBackgroundResource(R.mipmap.play)
-                seekBarprogress.max = MyService.msongplaer.duration
+                seekBarprogress.max = MyService.mediaPlayer.duration
             }
-
             MyService.refresh()
         }
 
         buttonbackskip.setOnClickListener {
             if (MyService.playingsong >0){
                 MyService.playingsong = MyService.playingsong -1
-                MyService.msongplaer.reset()
-                val obj= MyService.allsonglist!![MyService.playingsong]
+                MyService.mediaPlayer.reset()
+                val obj= MyService.songList!![MyService.playingsong]
                 textViewsongnamefullscreen.text=obj.aName
-                MyService.msongplaer.setDataSource(obj.aPath)
-                MyService.msongplaer.prepare()
-                MyService.msongplaer.start()
-                MyService.currentplaingsong =obj
+                MyService.mediaPlayer.setDataSource(obj.aPath)
+                MyService.mediaPlayer.prepare()
+                MyService.mediaPlayer.start()
+                MyService.currentPlayingSong =obj
                 buttonplapause.setBackgroundResource(R.mipmap.play)
-                seekBarprogress.setMax(MyService.msongplaer.getDuration());
+                seekBarprogress.setMax(MyService.mediaPlayer.getDuration());
             }
             MyService.refresh()
         }
@@ -130,7 +129,7 @@ class SongDetailFragment  : Fragment() {
     }
 
     fun setbuttons(){
-        if (MyService.msongplaer.isPlaying){
+        if (MyService.mediaPlayer.isPlaying){
             buttonplapause.setBackgroundResource(R.mipmap.play)
         }else{
             buttonplapause.setBackgroundResource(R.mipmap.pause)

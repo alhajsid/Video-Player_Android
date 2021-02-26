@@ -8,7 +8,6 @@
         android:background="@color/colorAccent"
         android:orientation="vertical">
 
-
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -38,7 +37,7 @@
                 android:layout_weight="94"
                 android:gravity="center"
                 android:text="Now playing"
-                android:textColor="#CFD9E9"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -100,16 +99,23 @@
 
         </LinearLayout>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/textViewsongnamefullscreen"
-                android:layout_width="300dp"
-                android:layout_height="0dp"
-                android:layout_weight="20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:maxLines="2"
-                android:text="TextView"
+                android:layout_weight="20"
+                tools:text="@tools:sample/lorem/random"
+                android:marqueeRepeatLimit ="marquee_forever"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip"
                 android:textColor="#3D3D3D"
-                android:textSize="18sp"
+                android:textSize="33sp"
                 android:textStyle="bold" />
 
         <LinearLayout
