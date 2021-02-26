@@ -28,50 +28,67 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mAdapter = MyAdapter(this)
-        mAdapter.addFragment(SongListFragment())
-        mAdapter.addFragment(SongDetailFragment())
-
         mPager = findViewById(R.id.viewpager)
-        isReadStoragePermissionGranted()
+        if (isReadStoragePermissionGranted()){
+            initView()
+        }
         buttonpermisiion.setOnClickListener{
             isReadStoragePermissionGranted()
         }
-    }
-
-    fun unTouchableViewPager(){
-        viewpager.isUserInputEnabled = false
-    }
-
-    fun touchableViewPager(){
-        viewpager.isUserInputEnabled = true
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 3) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED&&grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                mPager.adapter = mAdapter
-                buttonpermisiion.visibility=View.GONE
+                initView()
             }
+        }
+    }
+
+    enum class fragments{
+        list,detail
+    }
+
+    var currentFragment=fragments.list
+
+    fun initView(){
+        buttonpermisiion.visibility=View.GONE
+        mAdapter = MyAdapter(this)
+        mAdapter.addFragment(SongListFragment())
+        mAdapter.addFragment(SongDetailFragment())
+        mPager.adapter=mAdapter
+        mPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentFragment=if (position==0) fragments.list else fragments.detail
+            }
+        })
+
+    }
+
+
+    override fun onBackPressed() {
+        if (currentFragment==fragments.detail){
+            mPager.setCurrentItem(0,true)
+        }else{
+            super.onBackPressed()
         }
     }
 
 
     fun isReadStoragePermissionGranted(): Boolean {
-        if (Build.VERSION.SDK_INT >= 23) {
+        return if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE) == PackageManager.PERMISSION_GRANTED) {
                 Log.e("FragmentActivity", "Permission is granted1")
-                mPager.adapter = mAdapter
-                buttonpermisiion.visibility=View.GONE
-                return true
+                true
             } else {
                 Log.e("FragmentActivity", "Permission is revoked1")
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.FOREGROUND_SERVICE), 3)
-                return false
+                false
             }
         } else { //permission is automatically granted on sdk<23 upon installation
-            return true
+            true
         }
     }
 
@@ -91,28 +108,12 @@ class MainActivity : AppCompatActivity() {
         fun addFragment(fragment: Fragment?) {
             arrayList.add(fragment!!)
         }
-//        override fun getCount(): Int {
-//            return 2
-//        }
-//
-//        override fun getItem(position: Int): Fragment {
-//
-//            when (position) {
-//                0 -> return SongListFragment(alhaj)
-//                1 ->
-//                    // return a different Fragment class here
-//                    // if you want want a completely different layout
-//                    return SongDetailFragment(alhaj)
-//                else -> return SongDetailFragment(alhaj)
-//            }
-//        }
+
     }
 
 
     companion object {
         lateinit var mPager: ViewPager2
-        val aj=MediaPlayer()
-        var CURRENT_PAGE = 1
 
     }
 

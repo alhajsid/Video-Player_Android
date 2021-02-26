@@ -1,5 +1,6 @@
 package com.example.alhaj.mediaplayer.Adaptors
 
+import android.content.res.ColorStateList
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,12 @@ import com.example.alhaj.mediaplayer.R
 import com.example.alhaj.mediaplayer.fragments.SongListFragment
 
 class SongLIstAdaptor: RecyclerView.Adapter<SongLIstAdaptor.ViewHolder>() {
+
     companion object{
        var SongList=ArrayList<AudioModel>()
     }
-    fun setList(list:ArrayList<AudioModel>){
 
+    fun setList(list:ArrayList<AudioModel>){
         SongList=list
     }
 
@@ -29,26 +31,26 @@ class SongLIstAdaptor: RecyclerView.Adapter<SongLIstAdaptor.ViewHolder>() {
     }
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-        p0.set(SongList[p1].aName,SongList[p1].aArtist,SongList[p1].time,p1)
+        p0.set(SongList[p1].aName,SongList[p1].aArtist,SongList[p1].time,p1, SongList[p1].aPath)
     }
 
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        lateinit var songName:TextView
-        lateinit var songArtist:TextView
-        lateinit var songDuration:TextView
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var songName:TextView = itemView.findViewById(R.id.textViewsongname)
+        var songArtist:TextView = itemView.findViewById(R.id.textViewArisname)
+        var songDuration:TextView = itemView.findViewById(R.id.textViewtime)
+        var main_container:View = itemView.findViewById(R.id.main_container)
 
-        init {
-            songName=itemView.findViewById(R.id.textViewsongname)
-            songArtist=itemView.findViewById(R.id.textViewArisname)
-            songDuration=itemView.findViewById(R.id.textViewtime)
-
-
-        }
-        fun set(name:String,artist:String,duration:String,position:Int){
+        fun set(name:String,artist:String,duration:String,position:Int,path:String){
             songName.text=name
             songArtist.text=artist
             songDuration.text=duration
+
+            if(MyService.currentPlayingSong!=null && path==MyService.currentPlayingSong!!.aPath){
+                main_container.backgroundTintList= ColorStateList.valueOf(itemView.context.resources.getColor(R.color.colorSelected))
+            }else{
+                main_container.backgroundTintList= ColorStateList.valueOf(itemView.context.resources.getColor(R.color.colorWhite))
+            }
 
             itemView.setOnClickListener {
                 MyService.mediaPlayer.reset()
@@ -58,9 +60,10 @@ class SongLIstAdaptor: RecyclerView.Adapter<SongLIstAdaptor.ViewHolder>() {
                 MyService.mediaPlayer.prepare()
                 MyService.mediaPlayer.start()
                 MyService.currentPlayingSong = obj
-                MyService.playingsong = position
+                MyService.playingSongIndex = position
                 SongListFragment.playPauseBtn.setBackgroundResource(R.mipmap.play)
                 MyService.refresh()
+                notifyDataSetChanged()
             }
         }
     }

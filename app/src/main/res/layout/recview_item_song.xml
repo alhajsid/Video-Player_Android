@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"
         android:layout_height="100dp"
         android:paddingStart="10dp"
-        android:paddingEnd="10dp">
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:elevation="3dp"
-        android:background="@drawable/shadow_background"
-        android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:id="@+id/main_container"
+            android:layout_height="match_parent"
+            android:background="@drawable/shadow_background"
+            android:elevation="3dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_height="match_parent"
-                android:layout_width="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <TextView
                     android:id="@+id/textViewArisname"
@@ -54,46 +54,50 @@
                     app:layout_constraintStart_toEndOf="@+id/textView300"
                     app:layout_constraintTop_toBottomOf="@+id/textViewArisname" />
 
-                <androidx.cardview.widget.CardView
-                        android:layout_width="60dp"
-                        app:cardBackgroundColor="#212121"
-                        app:cardCornerRadius="40dp"
-                        android:scaleType="fitXY"
-                        android:layout_marginTop="8dp"
-                        android:elevation="3dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginBottom="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="16dp"
-                        app:layout_constraintVertical_bias="0.511"
-                        android:id="@+id/textView300"
-                        android:layout_height="60dp">
-                    <ImageView
-                            android:layout_width="match_parent"
-                            android:src="@mipmap/defaultpic"
-                            android:layout_height="match_parent"/>
-                </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                    android:id="@+id/textView300"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:elevation="3dp"
+                    android:scaleType="fitXY"
+                    app:cardBackgroundColor="#212121"
+                    app:cardCornerRadius="40dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.511">
+
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/defaultpic" />
+            </androidx.cardview.widget.CardView>
 
             <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp" app:srcCompat="@drawable/ic_access_time_black_24dp"
                     android:id="@+id/imageView2"
-                    android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/textViewsongname"
-                    app:layout_constraintTop_toBottomOf="@+id/textViewsongname"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textViewsongname"
+                    app:srcCompat="@drawable/ic_access_time_black_24dp" />
+
             <TextView
-                    android:text="3:08"
+                    android:id="@+id/textViewtime"
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="3:08"
                     android:textColor="#646464"
                     android:textSize="12sp"
-                    android:id="@+id/textViewtime"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
-                    android:layout_marginStart="3dp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-                    app:layout_constraintTop_toTopOf="@+id/imageView2"/>
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="@+id/imageView2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 

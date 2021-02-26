@@ -17,6 +17,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.alhaj.mediaplayer.Adaptors.SongLIstAdaptor
 import com.example.alhaj.mediaplayer.BroadcastReciever.*
 import com.example.alhaj.mediaplayer.fragments.SongListFragment
+import com.example.alhaj.mediaplayer.fragments.SongListFragment.Companion.adaptor
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -180,7 +181,7 @@ class MyService : Service() {
                     mediaPlayer.reset()
                     mediaPlayer.setDataSource(songList!!.get(i).aPath)
                     currentPlayingSong = songList!!.get(i)
-                    playingsong = i
+                    playingSongIndex = i
                     mediaPlayer.prepare()
                     mediaPlayer.start()
                     refresh()
@@ -254,7 +255,7 @@ class MyService : Service() {
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build())
         }
-        var playingsong = 0
+        var playingSongIndex = 0
         var isServiceRunning = false
         var songList: ArrayList<AudioModel>? = null
         var currentPlayingSong: AudioModel? = null
@@ -269,14 +270,15 @@ class MyService : Service() {
         }
 
         fun refresh() {
+            adaptor.notifyDataSetChanged()
             MyService().refreshnotification()
         }
 
         fun back() {
-            if (playingsong > 0) {
-                playingsong = playingsong - 1
+            if (playingSongIndex > 0) {
+                playingSongIndex -= 1
                 mediaPlayer.reset()
-                val obj = songList!![playingsong]
+                val obj = songList!![playingSongIndex]
                 mediaPlayer.setDataSource(obj.aPath)
                 mediaPlayer.prepare()
                 mediaPlayer.start()
@@ -287,10 +289,10 @@ class MyService : Service() {
 
         fun next() {
             try {
-                if (playingsong < songList!!.size - 1) {
-                    playingsong = playingsong + 1
+                if (playingSongIndex < songList!!.size - 1) {
+                    playingSongIndex = playingSongIndex + 1
                     mediaPlayer.reset()
-                    val obj = songList!![playingsong]
+                    val obj = songList!![playingSongIndex]
                     mediaPlayer.setDataSource(obj.aPath)
                     mediaPlayer.prepare()
                     mediaPlayer.start()
